@@ -12,11 +12,16 @@ void setColorComponent(char* buffer, int color, int off)
 
 void setColor(char* buffer, int r, int g, int b)
 {
-    memcpy_s(buffer, CHAR_SEQ_LENGTH, CHAR_SEQ, CHAR_SEQ_LENGTH);
+    memcpy(buffer, CHAR_SEQ, CHAR_SEQ_LENGTH);
 
     setColorComponent(buffer, r,  7); // r
     setColorComponent(buffer, g, 11); // g
     setColorComponent(buffer, b, 15); // b
+}
+
+int colorEquals(RgbChar a, RgbChar b)
+{
+    return a.r == b.r && a.g == b.g && a.b == b.b;
 }
 
 void renderMap(RgbChar* map, int count)
@@ -46,9 +51,4 @@ void renderMap(RgbChar* map, int count)
     printf(buffer);
 
     //free(buffer);
-}
-
-int colorEquals(RgbChar a, RgbChar b)
-{
-    return a.r == b.r && a.g == b.g && a.b == b.b;
 }
