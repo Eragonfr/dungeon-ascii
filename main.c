@@ -1,5 +1,4 @@
 ﻿#include <stdio.h>
-#include <windows.h>
 
 #include "renderer.h"
 
@@ -8,12 +7,6 @@
 
 int main()
 {
-    HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-    DWORD  dwMode = 0;
-
-    GetConsoleMode(hOut, &dwMode);
-    SetConsoleMode(hOut, dwMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
-
     RgbChar map[] = {
         {   0,   0, 255, 219 },
         { 255, 255, 255, 219 },

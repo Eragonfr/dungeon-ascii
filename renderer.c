@@ -42,10 +42,10 @@ void renderMap(RgbChar* map, int count)
         off++;
     }
 
-    DWORD written = 0;
-    WriteConsoleA(GetStdHandle(STD_OUTPUT_HANDLE), buffer, off, &written, 0);
+    buffer[off] = '\0';
+    printf(buffer);
 
-    free(buffer);
+    //free(buffer);
 }
 
 int colorEquals(RgbChar a, RgbChar b)

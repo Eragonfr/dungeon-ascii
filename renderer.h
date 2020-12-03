@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <windows.h>
 
 #include "rgbchar.h"
 
