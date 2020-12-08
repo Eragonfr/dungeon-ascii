@@ -1,6 +1,13 @@
+# Make shit
+ascii-dungeon
+build/
+
+# Temp files from gcc
 *.a
 *.out
 *.o
+
+# Windows shit
 *.exe
 
 *.sln
