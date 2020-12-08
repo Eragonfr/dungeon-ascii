@@ -1,9 +1,7 @@
 ﻿#include <stdio.h>
 
 #include "renderer.h"
-
-#define SCREEN_WIDTH 80
-#define SCREEN_HEIGHT 20
+#include "map.h"
 
 #ifdef _WIN32
 
@@ -11,21 +9,21 @@
 
 char readInput()
 {
-    return _getch();
+	return _getch();
 }
 #endif
 
 #ifdef __unix__
 
-#include "curses.h"
+#include <curses.h>
 
 char readInput()
 {
-    initscr();
-    char ch = getch();
-    endwin();
+	initscr();
+	char ch = getch();
+	endwin();
 
-    return ch;
+	return ch;
 }
 
 #endif
@@ -34,15 +32,12 @@ char readInput();
 
 int main()
 {
-    RgbChar map[] = {
-        {   0,   0, 255, 219 },
-        { 255, 255, 255, 219 },
-        { 255,   0,   0, 219 }
-    };
+	RgbChar map[MAP_WIDTH*MAP_HEIGHT];
+	makeMap(map);
 
-    printf("%c", readInput());
+	printf("%c", readInput());
 
-    renderMap(map, sizeof(map) / sizeof(map[0]));
+	renderMap(map, sizeof(map) / sizeof(map[0]));
 
-    return 0;
+	return 0;
 }

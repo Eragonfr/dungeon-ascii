@@ -7,10 +7,10 @@ LDIR	=
 TARGET = ascii-dungeon
 
 # Files to compile
-_DEPS = renderer.h rgbchar.h
-_OBJ = main.o renderer.o
+_DEPS = renderer.h rgbchar.h map.h
+_OBJ = main.o renderer.o map.o
 
-# External ib dependencies
+# External lib dependencies
 LIBS=-lncurses
 
 # Compiler and compiler params
