@@ -62,8 +62,6 @@ int writeColor(char* buffer, unsigned char r, unsigned char g, unsigned char b)
 
 void renderMap(const RgbChar* map, unsigned int count)
 {
-
-        printf("%d", count);
     // prepare buffer   
     char* buffer = calloc(count * 20, sizeof(char));
     if (buffer == NULL) { return; }
