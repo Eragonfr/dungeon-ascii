@@ -39,7 +39,7 @@ int main()
 
 	printf("%c", readInput());
 
-	renderMap(map, sizeof(*map) / sizeof(map[0]));
+	renderMap(map, MAP_WIDTH*MAP_HEIGHT);
 
 	return 0;
 }
