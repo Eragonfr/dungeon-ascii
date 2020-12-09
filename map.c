@@ -21,7 +21,7 @@ _Bool placeRect(const struct Rect rect, const enum Tile tile);
 _Bool makeCorridor(int x, int y, enum Direction dir);
 _Bool createFeature(int x, int y, enum Direction dir);
 _Bool makeRoom(int x, int y, enum Direction dir, _Bool firstRoom);
-void rgbMapFromAscii(RgbChar * map);
+RgbChar * rgbMapFromAscii(RgbChar map[MAP_HEIGHT*MAP_WIDTH]);
 
 int randInRange(int min, int max) {
 	int result, temp;
@@ -324,31 +324,48 @@ _Bool generate(int maxFeatures) {
 	return 1;
 }
 
-void rgbMapFromAscii(RgbChar * map) {
-	for (int i = 0; i < (sizeof(map)); ++i) {
-		if (tiles[i] == Floor || tiles[i] == Corridor || tiles[i] ==  ClosedDoor || tiles[i] ==  OpenDoor) {
-			RgbChar temp = {FLOOR_COLOR, 219};
+RgbChar *  rgbMapFromAscii(RgbChar map[MAP_HEIGHT*MAP_WIDTH]) {
+	for (int i = 0; i < MAP_HEIGHT*MAP_WIDTH; i++) {
+		if (tiles[i] == ' ' || tiles[i] ==  '+' || tiles[i] ==  '-') {
+			RgbChar temp = {169, 169, 169, 35};
 			map[i] = temp;
 		}
-		else if (tiles[i] == Unused) {
-			RgbChar temp = {VOID_COLOR, 219};
+		else if (tiles[i] == '.') {
+			RgbChar temp = {0, 0, 0, 35};
 			map[i] = temp;
 		}
-		else if (tiles[i] == Wall) {
-			RgbChar temp = {WALL_COLOR, 219};
+		else {
+			RgbChar temp = {255, 0, 0, 35};
 			map[i] = temp;
 		}
 	}
+	return map;
 }
 
-void makeMap(RgbChar * map) {
+RgbChar * makeMap(RgbChar map[MAP_HEIGHT*MAP_WIDTH]) {
 	srand((unsigned)time(NULL));
 	struct Rect rect = {0,0,0,0};
 	do {
 		exits[0] = rect;
-		for (int i = 0; i < sizeof(tiles); ++i) {
+		for (int i = 0; i < sizeof(tiles); i++) {
 			tiles[i] = ' ';
 		}
 	} while (!generate(50));
-	rgbMapFromAscii(map);
+	//print(map);
+
+	for (int i = 0; i < MAP_HEIGHT*MAP_WIDTH; i++) {
+		if (tiles[i] == ' ' || tiles[i] ==  '+' || tiles[i] ==  '-') {
+			RgbChar temp = {FLOOR_COLOR, 35};
+			map[i] = temp;
+		}
+		else if (tiles[i] == '.') {
+			RgbChar temp = {VOID_COLOR, 35};
+			map[i] = temp;
+		}
+		else {
+			RgbChar temp = {WALL_COLOR, 35};
+			map[i] = temp;
+		}
+	}
+	return map;
 }

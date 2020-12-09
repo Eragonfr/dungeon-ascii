@@ -32,12 +32,14 @@ char readInput();
 
 int main()
 {
-	RgbChar map[MAP_WIDTH*MAP_HEIGHT];
-	makeMap(map);
+	RgbChar *map = calloc(MAP_WIDTH*MAP_HEIGHT, sizeof(RgbChar));
+	RgbChar init = {0, 0, 0, 0};
+	map[0] = init;
+	map = makeMap(map);
 
 	printf("%c", readInput());
 
-	renderMap(map, sizeof(map) / sizeof(map[0]));
+	renderMap(map, sizeof(*map) / sizeof(map[0]));
 
 	return 0;
 }

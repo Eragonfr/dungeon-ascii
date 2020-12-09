@@ -35,4 +35,4 @@ enum Direction {
 	DirectionCount,
 };
 
-void makeMap(RgbChar * map);
+RgbChar * makeMap(RgbChar map[MAP_HEIGHT*MAP_WIDTH]);
