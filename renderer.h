@@ -9,4 +9,4 @@ int colorEquals(RgbChar a, RgbChar b);
 int writeColor(char* buffer, unsigned char r, unsigned char g, unsigned char b);
 int writeColorComponent(char* buffer, unsigned char color, unsigned int off);
 
-void renderMap(struct RgbChar* map, unsigned int count);
+void renderMap(const RgbChar* map, unsigned int count);

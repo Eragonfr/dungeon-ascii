@@ -7,7 +7,7 @@ build/
 *.out
 *.o
 
-# Windows shit
+# les trucs windows mieux que linux
 *.exe
 
 *.sln

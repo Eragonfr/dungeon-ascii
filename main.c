@@ -37,9 +37,8 @@ int main()
 	map[0] = init;
 	map = makeMap(map);
 
+	renderMap(map, MAP_WIDTH * MAP_HEIGHT);
+
 	printf("%c", readInput());
-
-	renderMap(map, MAP_WIDTH*MAP_HEIGHT);
-
 	return 0;
 }

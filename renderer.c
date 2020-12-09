@@ -62,18 +62,20 @@ int writeColor(char* buffer, unsigned char r, unsigned char g, unsigned char b)
 
 void renderMap(const RgbChar* map, unsigned int count)
 {
+
+        printf("%d", count);
     // prepare buffer   
     char* buffer = calloc(count * 20, sizeof(char));
     if (buffer == NULL) { return; }
 
     int off = 0;
 
-    rgbch lastChar = { -1, -1, -1, -1 };
+    RgbChar lastChar = { -1, -1, -1, -1 };
 
     // simplify map
-    for (size_t i = 0; i < count; i++)
+    for (unsigned int i = 0; i < count; i++)
     {
-        rgbchar rgbch = map[i];
+        RgbChar rgbch = map[i];
 
         if (!colorEquals(rgbch, lastChar))
         {
@@ -91,4 +93,9 @@ void renderMap(const RgbChar* map, unsigned int count)
     printf(buffer);
 
     free(buffer);
+}
+
+int colorEquals(RgbChar a, RgbChar b)
+{
+    return a.r == b.r && a.g == b.g && a.b == b.b;
 }
