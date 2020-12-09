@@ -5,7 +5,8 @@
 #include "rgbchar.h"
 
 int colorEquals(RgbChar a, RgbChar b);
-void setColor(char* buffer, int r, int g, int b);
-void setColorComponent(char* buffer, int color, int off);
 
-void renderMap(struct RgbChar* map, int count);
+int writeColor(char* buffer, unsigned char r, unsigned char g, unsigned char b);
+int writeColorComponent(char* buffer, unsigned char color, unsigned int off);
+
+void renderMap(struct RgbChar* map, unsigned int count);

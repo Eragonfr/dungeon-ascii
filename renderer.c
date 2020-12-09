@@ -1,54 +1,94 @@
 #include "renderer.h"
 
-const char CHAR_SEQ[19] = { 27, 91, 51, 56, 59, 50, 59, 48, 48, 48, 59, 48, 48, 48, 59, 48, 48, 48, 109 };
-const int CHAR_SEQ_LENGTH = sizeof(CHAR_SEQ);
+// default sequence header
+const unsigned char COLOR_SEQ_HEADER[7] = { 27, 91, 51, 56, 59, 50, 59 };
+const int COLOR_SEQ_HEADER_SIZE = sizeof(COLOR_SEQ_HEADER);
 
-void setColorComponent(char* buffer, int color, int off)
+int writeColorComponent(char* buffer, unsigned char color, unsigned int off)
 {
-	buffer[off + 0] = color / 100 + '0';
-	buffer[off + 1] = color / 10 % 10 + '0';
-	buffer[off + 2] = color % 10 + '0';
+    // separe color digits
+    unsigned char digits[3] =
+    {
+        color / 100 + 48,
+        color / 10 % 10 + 48,
+        color % 10 + 48
+    };
+     
+    // count of digits to write
+    int size = 0;
+    for (int i = 0; i < 3; i++)
+    {
+        if ((digits[i] == 48 && size != 0) || digits[i] != 48)
+        {
+            size++;
+        }
+    }
+
+    // handle 0
+    if (size == 0) { size = 1; }
+    
+    // write digits to buffer
+    int digitOff = 3 - size;
+    for (int i = 0; i < size; i++)
+    {
+        buffer[off + i] = digits[i + digitOff];
+    }
+
+    off += size;
+
+    // add separator
+    buffer[off++] = 59;
+    
+    return size + 1;
 }
 
-void setColor(char* buffer, int r, int g, int b)
+int writeColor(char* buffer, unsigned char r, unsigned char g, unsigned char b)
 {
-	memcpy(buffer, CHAR_SEQ, CHAR_SEQ_LENGTH);
+    // default header
+    memcpy(buffer, COLOR_SEQ_HEADER, COLOR_SEQ_HEADER_SIZE);
 
-	setColorComponent(buffer, r,  7); // r
-	setColorComponent(buffer, g, 11); // g
-	setColorComponent(buffer, b, 15); // b
+    int off = COLOR_SEQ_HEADER_SIZE;
+
+    // write color components
+    off += writeColorComponent(buffer, r, off); // r
+    off += writeColorComponent(buffer, g, off); // g
+    off += writeColorComponent(buffer, b, off); // b
+
+    // add seperator
+    buffer[off - 1] = 109;
+
+    return off;
 }
 
-int colorEquals(RgbChar a, RgbChar b)
+void renderMap(const RgbChar* map, unsigned int count)
 {
-	return a.r == b.r && a.g == b.g && a.b == b.b;
-}
+    // prepare buffer   
+    char* buffer = calloc(count * 20, sizeof(char));
+    if (buffer == NULL) { return; }
 
-void renderMap(RgbChar* map, int count)
-{
-	char* buffer = malloc(count * 20);
-	int off = 0;
+    int off = 0;
 
-	RgbChar lastChar = { -1, -1, -1, -1 };
+    rgbch lastChar = { -1, -1, -1, -1 };
 
-	for (size_t i = 0; i < count; i++)
-	{
-		RgbChar rgbch = map[i];
+    // simplify map
+    for (size_t i = 0; i < count; i++)
+    {
+        rgbchar rgbch = map[i];
 
-		if (!colorEquals(rgbch, lastChar))
-		{
-			setColor(buffer + off, rgbch.r, rgbch.g, rgbch.b);
-			off += CHAR_SEQ_LENGTH;
+        if (!colorEquals(rgbch, lastChar))
+        {
+            off += writeColor(buffer + off, rgbch.r, rgbch.g, rgbch.b);
 
-			lastChar = rgbch;
-		}
+            lastChar = rgbch;
+        }
 
-		buffer[off] = rgbch.ch;
-		off++;
-	}
+        buffer[off] = rgbch.ch;
+        off++;
+    }
 
-	buffer[off] = '\0';
-	printf(buffer);
+    buffer[off] = '\0';
 
-	//free(buffer);
+    printf(buffer);
+
+    free(buffer);
 }
