@@ -1,44 +1,39 @@
-﻿#include <stdio.h>
+﻿#include <SDL2/SDL.h> 
 
-#include "renderer.h"
-#include "map.h"
 
-#ifdef _WIN32
+int main() {
+	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
+		printf("Failed to initialize the SDL2 library\nSDL2 Error: %s\n", SDL_GetError());
+		return 1;
+	}
 
-#include <conio.h>
+	SDL_Window *window = SDL_CreateWindow("SDL2 Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 680, 480, 0);
 
-char readInput()
-{
-	return _getch();
-}
-#endif
+	if(!window) {
+		printf("Failed to create window\nSDL2 Error: %s\n", SDL_GetError());
+		return 1;
+	}
 
-#ifdef __unix__
+	SDL_Surface *window_surface = SDL_GetWindowSurface(window);
 
-#include <curses.h>
+	if(!window_surface) {
+		printf("Failed to get the surface from the window\nSDL2 Error: %s\n", SDL_GetError());
+		return 1;
+	}
 
-char readInput()
-{
-	initscr();
-	char ch = getch();
-	endwin();
+	_Bool keep_window_open = 1;
+	while(keep_window_open) {
+		SDL_Event e;
+		while(SDL_PollEvent(&e) > 0) {
+			switch(e.type) {
+				case SDL_QUIT:
+					keep_window_open = 0;
+					break;
+			}
 
-	return ch;
-}
+			SDL_UpdateWindowSurface(window);
+		}
+	}
 
-#endif
-
-char readInput();
-
-int main()
-{
-	RgbChar *map = calloc(MAP_WIDTH*MAP_HEIGHT, sizeof(RgbChar));
-	RgbChar init = {0, 0, 0, 0};
-	map[0] = init;
-	map = makeMap(map);
-
-	renderMap(map, MAP_WIDTH * MAP_HEIGHT);
-
-	printf("%c", readInput());
 	return 0;
 }

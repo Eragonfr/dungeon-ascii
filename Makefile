@@ -4,18 +4,18 @@ ODIR	= build
 LDIR	=
 
 # Target name
-TARGET = ascii-dungeon
+TARGET = dungeon
 
 # Files to compile
-_DEPS = renderer.h rgbchar.h map.h
-_OBJ = main.o renderer.o map.o
+_DEPS =
+_OBJ = main.o
 
 # External lib dependencies
-LIBS=-lncurses
+LIBS=-lSDL2_image
 
 # Compiler and compiler params
 CC		= gcc
-CFLAGS	= -I$(IDIR) -fstack-protector
+CFLAGS	= -I$(IDIR) -fstack-protector `sdl2-config --libs --cflags`
 
 # Dark magic
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
