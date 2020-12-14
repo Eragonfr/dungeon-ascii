@@ -7,8 +7,8 @@ LDIR	=
 TARGET = ascii-dungeon
 
 # Files to compile
-_DEPS = renderer.h rgbchar.h map.h
-_OBJ = main.o renderer.o map.o
+_DEPS = map.h rand.h loop.h player.h
+_OBJ = main.o map.o rand.o loop.o
 
 # External lib dependencies
 LIBS=-lncurses
