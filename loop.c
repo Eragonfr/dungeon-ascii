@@ -62,6 +62,42 @@ void mainLoop(char tiles[MAP_WIDTH*MAP_HEIGHT], Player player) {
 					tiles[oldy*MAP_WIDTH+oldx] = FLOOR_CHAR;
 				}
 				break;
+			case 65:
+				oldx = player.x;
+				oldy = player.y;
+				if (checkPos(player.x, player.y - 1, tiles)) {
+					player.y--;
+					tiles[player.y*MAP_WIDTH+player.x] = PLAYER_CHAR;
+					tiles[oldy*MAP_WIDTH+oldx] = FLOOR_CHAR;
+				}
+				break;
+			case 66:
+				oldx = player.x;
+				oldy = player.y;
+				if (checkPos(player.x, player.y + 1, tiles)) {
+					player.y++;
+					tiles[player.y*MAP_WIDTH+player.x] = PLAYER_CHAR;
+					tiles[oldy*MAP_WIDTH+oldx] = FLOOR_CHAR;
+				}
+				break;
+			case 67:
+				oldx = player.x;
+				oldy = player.y;
+				if (checkPos(player.x + 1, player.y, tiles)) {
+					player.x++;
+					tiles[player.y*MAP_WIDTH+player.x] = PLAYER_CHAR;
+					tiles[oldy*MAP_WIDTH+oldx] = FLOOR_CHAR;
+				}
+				break;
+			case 68:
+				oldx = player.x;
+				oldy = player.y;
+				if (checkPos(player.x - 1, player.y, tiles)) {
+					player.x--;
+					tiles[player.y*MAP_WIDTH+player.x] = PLAYER_CHAR;
+					tiles[oldy*MAP_WIDTH+oldx] = FLOOR_CHAR;
+				}
+				break;
 			case 127:
 				loop = 0;
 				break;
@@ -74,7 +110,7 @@ void mainLoop(char tiles[MAP_WIDTH*MAP_HEIGHT], Player player) {
 		attron(COLOR_PAIR(PLAYER_PAIR));
 		mvaddch(player.y, player.x, PLAYER_CHAR);
 		attroff(COLOR_PAIR(PLAYER_PAIR));
-		mvprintw(MAP_HEIGHT,0, "X: %d\tY: %d\t OX: %d\tOY: %d\n", player.x, player.y, oldx, oldy);
+		mvprintw(MAP_HEIGHT,0, "X: %d\tY: %d\t OX: %d\tOY: %d\n%d", player.x, player.y, oldx, oldy, ch);
 		move(player.y, player.x);
 		//renderMap(tiles, player);
 
