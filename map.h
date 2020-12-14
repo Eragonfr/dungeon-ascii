@@ -1,30 +1,22 @@
-#include "rgbchar.h"
+#include "player.h"
 
 #define MAP_WIDTH 80
 #define MAP_HEIGHT 20
 
-/*
-#define WALL_FULL_CHAR "█"
-#define WALL_UP_CHAR "▀"
-#define WALL_DOWN_CHAR "▄"
-*/
+#define WALL_CHAR '#'
+#define FLOOR_CHAR ' '
+#define VOID_CHAR '.'
+#define PLAYER_CHAR '@'
 
-#define WALL_COLOR 255, 0, 0
-#define FLOOR_COLOR 169, 169, 169
-#define VOID_COLOR 0, 0, 0
+#define WALL_PAIR	1
+#define FLOOR_PAIR	2
+#define VOID_PAIR	3
+#define PLAYER_PAIR 4
+
 
 struct Rect {
 	int x, y;
 	int width, height;
-};
-
-enum Tile {
-	Unused		= ' ',
-	Floor		= '.',
-	Corridor	= ',',
-	Wall		= '#',
-	ClosedDoor	= '+',
-	OpenDoor	= '-',
 };
 
 enum Direction {
@@ -35,4 +27,6 @@ enum Direction {
 	DirectionCount,
 };
 
-RgbChar * makeMap(RgbChar map[MAP_HEIGHT*MAP_WIDTH]);
+char * makeMap();
+char getTile(int x, int y);
+void renderMap(const char* map, const Player player);

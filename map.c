@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
-#include <time.h>
+#include <curses.h>
 
 #include "map.h"
+#include "rand.h"
 
 int rooms_latest = 0;
 int exits_latest = 0;
@@ -11,48 +11,20 @@ char tiles[MAP_WIDTH*MAP_HEIGHT];
 struct Rect exits[MAP_WIDTH*MAP_HEIGHT];
 struct Rect rooms[50];
 
-int randInRange(int min, int max);
-char getTile(int x, int y);
 char* setTile(int x, int y, char tile);
 _Bool generate(int maxFeatures);
-_Bool randomBool();
 _Bool createFeature();
-_Bool placeRect(const struct Rect rect, const enum Tile tile);
+_Bool placeRect(const struct Rect rect, const char tile);
 _Bool makeCorridor(int x, int y, enum Direction dir);
 _Bool createFeature(int x, int y, enum Direction dir);
 _Bool makeRoom(int x, int y, enum Direction dir, _Bool firstRoom);
-RgbChar * rgbMapFromAscii(RgbChar map[MAP_HEIGHT*MAP_WIDTH]);
-
-int randInRange(int min, int max) {
-	int result, temp;
-	if (min > max) {
-		temp = max;
-		min = max;
-		max = temp;
-	}
-	result = ((rand() % (max - min + 1)) + min);
-	return result;
-}
-
-_Bool randomBool() {
-	return rand() % 2;
-}
 
 char getTile(int x, int y) {
 	if (x < 0 || y < 0 || x >= MAP_WIDTH || y >= MAP_HEIGHT) {
-		return Unused;
+		return VOID_CHAR;
 	}
 
 	return tiles[x + y * MAP_WIDTH];
-}
-
-void print() {
-	for (int y = 0; y < MAP_HEIGHT; ++y) {
-		for (int x = 0; x < MAP_WIDTH; ++x) {
-			printf("%c", getTile(x, y));
-		}
-		printf("\n");
-	}
 }
 
 char* setTile(int x, int y, char tile) {
@@ -112,7 +84,7 @@ _Bool makeRoom(int x, int y, enum Direction dir, _Bool firstRoom) {
 		room.y = y - room.height / 2;
 	}
 
-	if (placeRect(room, Floor)) {
+	if (placeRect(room, FLOOR_CHAR)) {
 		rooms[rooms_latest] = room;
 		rooms_latest++;
 
@@ -141,14 +113,14 @@ _Bool makeRoom(int x, int y, enum Direction dir, _Bool firstRoom) {
 	return 0;
 }
 
-_Bool placeRect(const struct Rect rect, const enum Tile tile) {
+_Bool placeRect(const struct Rect rect, const char tile) {
 	if (rect.x < 1 || rect.y < 1 || rect.x + rect.width > MAP_WIDTH - 1 || rect.y + rect.height > MAP_HEIGHT - 1) {
 		return 0;
 	}
 
 	for (int y = rect.y; y < rect.y + rect.height; ++y) {
 		for (int x = rect.x; x < rect.x + rect.width; ++x) {
-			if (getTile(x, y) != Unused) {
+			if (getTile(x, y) != VOID_CHAR) {
 				return 0;
 			}
 		}
@@ -157,14 +129,13 @@ _Bool placeRect(const struct Rect rect, const enum Tile tile) {
 	for (int y = rect.y - 1; y < rect.y + rect.height + 1; ++y) {
 		for (int x = rect.x - 1; x < rect.x + rect.width + 1; ++x) {
 			if (x == rect.x - 1 || y == rect.y - 1 || x == rect.x + rect.width || y == rect.y + rect.height) {
-				setTile(x, y, Wall);
+				setTile(x, y, WALL_CHAR);
 			}
 			else {
 				setTile(x, y, tile);
 			}
 		}
 	}
-
 	return 1;
 }
 
@@ -228,7 +199,7 @@ _Bool makeCorridor(int x, int y, enum Direction dir) {
 		}
 	}
 
-	if (placeRect(corridor, Corridor)) {
+	if (placeRect(corridor, FLOOR_CHAR)) {
 		if (dir != South && corridor.width != 1) {
 			struct Rect rect = {corridor.x, corridor.y - 1, corridor.width, 1};
 			exits[exits_latest] = rect;
@@ -255,10 +226,11 @@ _Bool makeCorridor(int x, int y, enum Direction dir) {
 }
 
 _Bool createFeature(int x, int y, enum Direction dir) {
-	static const int roomChance = 50;
+	int dx;
+	int dy;
 
-	int dx = 0;
-	int dy = 0;
+	dx = 0;
+	dy = 0;
 
 	if (dir == North) {
 		dy = 1;
@@ -273,29 +245,13 @@ _Bool createFeature(int x, int y, enum Direction dir) {
 		dx = -1;
 	}
 
-	if (getTile(x + dx, y + dy) != Floor && getTile(x + dx, y + dy) != Corridor) {
+	if (getTile(x + dx, y + dy) != FLOOR_CHAR) {
 		return 0;
 	}
 
-	if (randInRange(0, 100) < roomChance) {
-		if (makeRoom(x, y, dir, 0))
-		{
-			setTile(x, y, ClosedDoor);
-
-			return 1;
-		}
-	}
-	else {
-		if (makeCorridor(x, y, dir)) {
-			if (getTile(x + dx, y + dy) == Floor) {
-				setTile(x, y, ClosedDoor);
-			}
-			else {
-				setTile(x, y, Corridor);
-			}
-
-			return 1;
-		}
+	if (makeCorridor(x, y, dir)) {
+		setTile(x, y, FLOOR_CHAR);
+		return 1;
 	}
 
 	return 0;
@@ -313,59 +269,49 @@ _Bool generate(int maxFeatures) {
 		}
 	}
 
-	for (int i = 0; i < (sizeof(tiles)); ++i) {
-		if (tiles[i] == Unused) {
-			tiles[i] = '.';
-		}
-		else if (tiles[i] == Floor || tiles[i] == Corridor) {
-			tiles[i] = ' ';
-		}
-	}
 	return 1;
 }
 
-RgbChar *  rgbMapFromAscii(RgbChar map[MAP_HEIGHT*MAP_WIDTH]) {
-	for (int i = 0; i < MAP_HEIGHT*MAP_WIDTH; i++) {
-		if (tiles[i] == ' ' || tiles[i] ==  '+' || tiles[i] ==  '-') {
-			RgbChar temp = {169, 169, 169, 35};
-			map[i] = temp;
-		}
-		else if (tiles[i] == '.') {
-			RgbChar temp = {0, 0, 0, 35};
-			map[i] = temp;
-		}
-		else {
-			RgbChar temp = {255, 0, 0, 35};
-			map[i] = temp;
-		}
-	}
-	return map;
-}
-
-RgbChar * makeMap(RgbChar map[MAP_HEIGHT*MAP_WIDTH]) {
-	srand((unsigned)time(NULL));
+char * makeMap() {
 	struct Rect rect = {0,0,0,0};
+
 	do {
 		exits[0] = rect;
 		for (int i = 0; i < sizeof(tiles); i++) {
-			tiles[i] = ' ';
+			tiles[i] = VOID_CHAR;
 		}
 	} while (!generate(50));
-	//print(map);
 
-	for (int i = 0; i < MAP_HEIGHT*MAP_WIDTH; i++) {
-		if (tiles[i] == ' ' || tiles[i] ==  '+' || tiles[i] ==  '-') {
-			RgbChar temp = {FLOOR_COLOR, 35};
-			map[i] = temp;
+	return tiles;
+}
+
+void renderMap(const char* map, const Player player) {
+	clear();
+	move(0, 0);
+
+	for (int i = 0; i < MAP_WIDTH*MAP_HEIGHT; i++) {
+		if (map[i] == WALL_CHAR) {
+			attron(COLOR_PAIR(WALL_PAIR));
+			addch(WALL_CHAR);
+			attroff(COLOR_PAIR(WALL_PAIR));
 		}
-		else if (tiles[i] == '.') {
-			RgbChar temp = {VOID_COLOR, 35};
-			map[i] = temp;
+		else if (map[i] == FLOOR_CHAR) {
+			attron(COLOR_PAIR(FLOOR_PAIR));
+			addch(FLOOR_CHAR);
+			attroff(COLOR_PAIR(FLOOR_PAIR));
 		}
-		else {
-			RgbChar temp = {WALL_COLOR, 35};
-			map[i] = temp;
+		else if (map[i] == PLAYER_CHAR) {
+			attron(COLOR_PAIR(PLAYER_PAIR));
+			addch(PLAYER_CHAR);
+			attroff(COLOR_PAIR(PLAYER_PAIR));
+		}
+		else if (map[i] == VOID_CHAR) {
+			attron(COLOR_PAIR(VOID_PAIR));
+			addch(VOID_CHAR);
+			attroff(COLOR_PAIR(VOID_PAIR));
 		}
 	}
-	return map;
+	printw("X: %d\tY: %d\n", player.x, player.y);
+	move(player.y, player.x);
+	refresh();
 }
