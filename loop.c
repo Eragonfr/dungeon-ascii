@@ -26,7 +26,16 @@ void mainLoop(char tiles[MAP_WIDTH*MAP_HEIGHT], Player player) {
 		ch = getch();
 
 		switch(ch) {
-			case KEY_UP:
+			case 'z':
+				oldx = player.x;
+				oldy = player.y;
+				if (checkPos(player.x, player.y - 1, tiles)) {
+					player.y--;
+					tiles[player.y*MAP_WIDTH+player.x] = PLAYER_CHAR;
+					tiles[oldy*MAP_WIDTH+oldx] = FLOOR_CHAR;
+				}
+				break;
+			case 's':
 				oldx = player.x;
 				oldy = player.y;
 				if (checkPos(player.x, player.y + 1, tiles)) {
@@ -35,34 +44,7 @@ void mainLoop(char tiles[MAP_WIDTH*MAP_HEIGHT], Player player) {
 					tiles[oldy*MAP_WIDTH+oldx] = FLOOR_CHAR;
 				}
 				break;
-			case 'Z':
-				oldx = player.x;
-				oldy = player.y;
-				if (checkPos(player.x, player.y + 1, tiles)) {
-					player.y++;
-					tiles[player.y*MAP_WIDTH+player.x] = PLAYER_CHAR;
-					tiles[oldy*MAP_WIDTH+oldx] = FLOOR_CHAR;
-				}
-				break;
-			case KEY_DOWN:
-				oldx = player.x;
-				oldy = player.y;
-				if (checkPos(player.x, player.y + 1, tiles)) {
-					player.y++;
-					tiles[player.y*MAP_WIDTH+player.x] = PLAYER_CHAR;
-					tiles[oldy*MAP_WIDTH+oldx] = FLOOR_CHAR;
-				}
-				break;
-			case 'S':
-				oldx = player.x;
-				oldy = player.y;
-				if (checkPos(player.x, player.y + 1, tiles)) {
-					player.y++;
-					tiles[player.y*MAP_WIDTH+player.x] = PLAYER_CHAR;
-					tiles[oldy*MAP_WIDTH+oldx] = FLOOR_CHAR;
-				}
-				break;
-			case KEY_RIGHT:
+			case 'd':
 				oldx = player.x;
 				oldy = player.y;
 				if (checkPos(player.x + 1, player.y, tiles)) {
@@ -71,25 +53,7 @@ void mainLoop(char tiles[MAP_WIDTH*MAP_HEIGHT], Player player) {
 					tiles[oldy*MAP_WIDTH+oldx] = FLOOR_CHAR;
 				}
 				break;
-			case 'D':
-				oldx = player.x;
-				oldy = player.y;
-				if (checkPos(player.x + 1, player.y, tiles)) {
-					player.x++;
-					tiles[player.y*MAP_WIDTH+player.x] = PLAYER_CHAR;
-					tiles[oldy*MAP_WIDTH+oldx] = FLOOR_CHAR;
-				}
-				break;
-			case KEY_LEFT:
-				oldx = player.x;
-				oldy = player.y;
-				if (checkPos(player.x - 1, player.y, tiles)) {
-					player.x--;
-					tiles[player.y*MAP_WIDTH+player.x] = PLAYER_CHAR;
-					tiles[oldy*MAP_WIDTH+oldx] = FLOOR_CHAR;
-				}
-				break;
-			case 'Q':
+			case 'q':
 				oldx = player.x;
 				oldy = player.y;
 				if (checkPos(player.x - 1, player.y, tiles)) {
