@@ -1,5 +1,5 @@
 # Make shit
-ascii-dungeon
+dungeon
 build/
 
 # Temp files from gcc
